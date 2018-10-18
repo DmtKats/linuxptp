@@ -25,6 +25,7 @@
 
 #include <linux/ptp_clock.h>
 
+#include "posixclock.h"
 #include "phc.h"
 
 /*
@@ -42,27 +43,18 @@ clockid_t phc_open(char *phc)
 {
 	clockid_t clkid;
 	struct ptp_clock_caps caps;
-	int fd = open(phc, O_RDWR);
-
-	if (fd < 0)
+	
+	clkid = posix_clock_open(phc);
+	if (clkid == CLOCK_INVALID)
 		return CLOCK_INVALID;
 
-	clkid = FD_TO_CLOCKID(fd);
 	/* check if clkid is valid */
 	if (phc_get_caps(clkid, &caps)) {
-		close(fd);
+		posix_clock_close(clkid);
 		return CLOCK_INVALID;
 	}
 
 	return clkid;
-}
-
-void phc_close(clockid_t clkid)
-{
-	if (clkid == CLOCK_INVALID)
-		return;
-
-	close(CLOCKID_TO_FD(clkid));
 }
 
 static int phc_get_caps(clockid_t clkid, struct ptp_clock_caps *caps)

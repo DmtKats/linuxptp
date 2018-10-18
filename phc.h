@@ -31,13 +31,6 @@
 clockid_t phc_open(char *phc);
 
 /**
- * Closes a PTP hardware clock device.
- *
- * @param clkid A clock ID obtained using phc_open().
- */
-void phc_close(clockid_t clkid);
-
-/**
  * Query the maximum frequency adjustment of a PTP hardware clock device.
  *
  * @param clkid A clock ID obtained using phc_open().

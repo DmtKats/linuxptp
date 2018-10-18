@@ -43,6 +43,7 @@
 #include "tsproc.h"
 #include "uds.h"
 #include "util.h"
+#include "posixclock.h"
 
 #define N_CLOCK_PFD (N_POLLFD + 1) /* one extra per port, for the fault timer */
 #define POW2_41 ((double)(1ULL << 41))
@@ -265,9 +266,7 @@ void clock_destroy(struct clock *c)
 	}
 	port_close(c->uds_port);
 	free(c->pollfd);
-	if (c->clkid != CLOCK_REALTIME) {
-		phc_close(c->clkid);
-	}
+	posix_clock_close(c->clkid);
 	servo_destroy(c->servo);
 	tsproc_destroy(c->tsproc);
 	stats_destroy(c->stats.offset);
@@ -1607,7 +1606,7 @@ int clock_switch_phc(struct clock *c, int phc_index)
 	max_adj = phc_max_adj(clkid);
 	if (!max_adj) {
 		pr_err("Switching PHC, clock is not adjustable");
-		phc_close(clkid);
+		posix_clock_close(clkid);
 		return -1;
 	}
 	fadj = (int) clockadj_get_freq(clkid);
@@ -1615,10 +1614,10 @@ int clock_switch_phc(struct clock *c, int phc_index)
 	servo = servo_create(c->config, c->servo_type, -fadj, max_adj, 0);
 	if (!servo) {
 		pr_err("Switching PHC, failed to create clock servo");
-		phc_close(clkid);
+		posix_clock_close(clkid);
 		return -1;
 	}
-	phc_close(c->clkid);
+	posix_clock_close(c->clkid);
 	servo_destroy(c->servo);
 	c->clkid = clkid;
 	c->servo = servo;

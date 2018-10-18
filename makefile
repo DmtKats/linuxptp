@@ -63,11 +63,11 @@ pmc: config.o hash.o msg.o pmc.o pmc_common.o print.o raw.o sk.o tlv.o \
 
 phc2sys: clockadj.o clockcheck.o config.o hash.o linreg.o msg.o ntpshm.o \
  nullf.o phc.o phc2sys.o pi.o pmc_common.o print.o raw.o servo.o sk.o stats.o \
- sysoff.o tlv.o transport.o udp.o udp6.o uds.o util.o version.o
+ sysoff.o tlv.o transport.o udp.o udp6.o uds.o util.o version.o posixclock.o
 
 hwstamp_ctl: hwstamp_ctl.o version.o
 
-phc_ctl: phc_ctl.o phc.o sk.o util.o clockadj.o sysoff.o print.o version.o
+phc_ctl: phc_ctl.o phc.o sk.o util.o clockadj.o sysoff.o print.o version.o posixclock.o
 
 snmp4lptp: config.o hash.o msg.o pmc_common.o print.o raw.o sk.o \
  snmp4lptp.o tlv.o transport.o udp.o udp6.o uds.o util.o
