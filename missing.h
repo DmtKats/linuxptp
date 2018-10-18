@@ -44,10 +44,18 @@
 #define CLOCK_INVALID -1
 #endif
 
+#ifndef CPUCLOCK_PERTHREAD_MASK
+#define CPUCLOCK_PERTHREAD_MASK 4
+#endif
+
+#ifndef CPUCLOCK_CLOCK_MASK
+#define CPUCLOCK_CLOCK_MASK	3
+#endif
+
 #define CLOCKFD 3
 #define FD_TO_CLOCKID(fd)	((clockid_t) ((((unsigned int) ~fd) << 3) | CLOCKFD))
 #define CLOCKID_TO_FD(clk)	((unsigned int) ~((clk) >> 3))
-
+#define CLOCKFD_MASK		(CPUCLOCK_PERTHREAD_MASK|CPUCLOCK_CLOCK_MASK)
 #ifndef HAVE_ONESTEP_SYNC
 enum _missing_hwtstamp_tx_types {
 	HWTSTAMP_TX_ONESTEP_SYNC = 2,
