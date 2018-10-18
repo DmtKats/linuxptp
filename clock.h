@@ -102,10 +102,12 @@ int clock_required_modes(struct clock *c);
  * @param config       Pointer to the configuration database.
  * @param phc_device   PTP hardware clock device to use. Pass NULL for automatic
  *                     selection based on the network interface.
+ * @param swc_device   A software clock device to use. Pass null for 
+ *                     CLOCK_REALTIME.
  * @return             A pointer to the single global clock instance.
  */
 struct clock *clock_create(enum clock_type type, struct config *config,
-			   const char *phc_device);
+			   const char *phc_device, const char *swc_device);
 
 /**
  * Obtains a clock's default data set.

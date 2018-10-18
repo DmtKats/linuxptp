@@ -58,6 +58,8 @@ static void usage(char *progname)
 		"           (may be specified multiple times)\n"
 		" -p [dev]  PTP hardware clock device to use, default auto\n"
 		"           (ignored for SOFTWARE/LEGACY HW time stamping)\n"
+		" -d [dev]  POSIX software clock to use, default CLOCK_REALTIME\n"
+		"           (only used for software timestamping)\n"
 		" -s        slave only mode (overrides configuration file)\n"
 		" -t        transparent clock\n"
 		" -l [num]  set the logging level to 'num'\n"
@@ -71,7 +73,8 @@ static void usage(char *progname)
 
 int main(int argc, char *argv[])
 {
-	char *config = NULL, *req_phc = NULL, *progname;
+	char *config = NULL, *req_phc = NULL, *progname,
+	     *swc_dev = NULL;
 	enum clock_type type = CLOCK_TYPE_ORDINARY;
 	int c, err = -1, index, print_level;
 	struct clock *clock = NULL;
@@ -90,7 +93,7 @@ int main(int argc, char *argv[])
 	/* Process the command line arguments. */
 	progname = strrchr(argv[0], '/');
 	progname = progname ? 1+progname : argv[0];
-	while (EOF != (c = getopt_long(argc, argv, "AEP246HSLf:i:p:sl:mqvh",
+	while (EOF != (c = getopt_long(argc, argv, "AEP246HSLf:i:p:sl:mqvhd:",
 				       opts, &index))) {
 		switch (c) {
 		case 0:
@@ -145,6 +148,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'p':
 			req_phc = optarg;
+			break;
+		case 'd':
+			swc_dev = optarg;
 			break;
 		case 's':
 			if (config_set_int(cfg, "slaveOnly", 1)) {
@@ -241,7 +247,7 @@ int main(int argc, char *argv[])
 		goto out;
 	}
 
-	clock = clock_create(type, cfg, req_phc);
+	clock = clock_create(type, cfg, req_phc, swc_dev);
 	if (!clock) {
 		fprintf(stderr, "failed to create a clock\n");
 		goto out;

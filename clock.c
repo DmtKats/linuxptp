@@ -851,7 +851,7 @@ static void ensure_ts_label(struct interface *iface)
 }
 
 struct clock *clock_create(enum clock_type type, struct config *config,
-			   const char *phc_device)
+			   const char *phc_device, const char *swc_device)
 {
 	enum servo_type servo = config_get_int(config, NULL, "clock_servo");
 	enum timestamp_type timestamping;
@@ -1053,7 +1053,16 @@ struct clock *clock_create(enum clock_type type, struct config *config,
 		}
 		clockadj_init(c->clkid);
 	} else {
-		c->clkid = CLOCK_REALTIME;
+		if (swc_device) {		
+			c->clkid = posix_clock_open(swc_device);
+			if (c->clkid == CLOCK_INVALID) {
+				pr_err("Failed to open clock at %s", 
+				       swc_device);
+				return NULL;
+			}
+		} else {
+			c->clkid = CLOCK_REALTIME;	
+		}
 		c->utc_timescale = 1;
 		clockadj_init(c->clkid);
 		max_adj = sysclk_max_freq();
